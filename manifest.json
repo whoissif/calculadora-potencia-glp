@@ -1,0 +1,18 @@
+{
+  "name": "Potencia de Aparatos a Gas",
+  "short_name": "Potencia Gas",
+  "description": "Calculadora de potencia de aparatos a gas propano, butano y gas natural, con datos reales de Repsol y Enagás.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "id": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b1220",
+  "theme_color": "#0b3d91",
+  "lang": "es",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
