@@ -548,9 +548,7 @@
   };
   const PRESIONES_GN = [20,22,50,55,100,150];
   // Proxy de Cloudflare Workers que consulta Enagás con cabeceras CORS (ver repo enagas-gn-proxy).
-  // Vacío mientras no esté desplegado: la búsqueda de municipios funciona igual,
-  // pero sin datos en vivo solo los 4 accesos rápidos tienen P.C.S./factor de referencia.
-  const WORKER_URL = "";
+  const WORKER_URL = "https://enagas-gn-proxy.whoissif.workers.dev";
 
   /* ---------- Utilidades ---------- */
   const $ = id => document.getElementById(id);
