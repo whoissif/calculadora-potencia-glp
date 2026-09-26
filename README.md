@@ -16,7 +16,7 @@ El sitio se sirve directamente desde la rama `main` con GitHub Pages: sin compil
 - **Tres tipos de gas**: propano, butano y gas natural, con un selector que adapta todo el formulario y el cálculo a cada uno.
 - **Consumo volumétrico** en L/min o m³/h.
 - **Propano/butano**: presión del contador en gr/cm² o mbar (atajos a 37, 150, 400, 800 gr/cm²), zona geográfica (A, B, C o personalizada) y densidad D, que se autocompletan según el gas elegido.
-- **Gas natural**: municipio (Madrid, Barcelona, Valencia, Sevilla o manual) y presión de suministro (20, 22, 50, 55, 100, 150 mbar), que autocompletan el P.C.S. mensual y el factor de corrección reales publicados por Enagás.
+- **Gas natural**: buscador con los 1.675 municipios y zonas de distribución reales de Enagás (más accesos rápidos a Madrid, Barcelona, Valencia y Sevilla) y presión de suministro (20, 22, 50, 55, 100, 150 mbar), que autocompletan el P.C.S. mensual y el factor de corrección cuando hay dato de referencia disponible.
 - **P.C.S. real de Repsol España** para propano y butano comercial, con un solo clic (ver fuentes abajo). También admite MJ/kg, kcal/kg o cualquier otro valor de factura.
 - **P.C.S. y factor de corrección reales de Enagás** para gas natural, por municipio (ver fuentes abajo).
 - **Factor de conversión manual**, por si quieres partir del valor que aparece en tu factura en lugar del calculado, en cualquiera de los tres gases.
@@ -44,20 +44,30 @@ El P.C.S. real puede variar ligeramente según el lote y la composición exacta 
 | Parámetro | Fuente |
 |-----------|--------|
 | Potencia (kW) = Caudal (m³/h) × Factor de corrección × P.C.S. mensual (kWh/m³(n)) | Enagás, [Calidad de gas por municipio](https://www.enagas.es/es/gestion-tecnica-sistema/energy-data/informacion-comercial/factor-conversion-facturacion/calidad-gas-municipio/), según Resolución de 15 de febrero de 2019 |
+| Lista de municipios y zonas (`municipios.json`) | Los 1.675 municipios/zonas reales de Enagás (`gasbytown.townitem.json`), con su código, nombre y provincia |
 | P.C.S. mensual y factor de corrección para Madrid, Barcelona, Valencia y Sevilla | Enagás, P.C.S. mensual acumulado a 25/09/2026, presiones estándar 20/22/50/55/100/150 mbar |
 
-El P.C.S. y el factor de corrección del gas natural cambian a diario y varían según la zona exacta de distribución dentro de cada municipio (por eso Madrid capital tiene varias zonas, como «Madrid 2 - Gas Natural Distribución»): los valores incluidos son una referencia reciente, no el dato del día. Para el valor exacto de tu suministro, consúltalo en el enlace de Enagás o en tu factura, e introdúcelo en los campos de «Municipio: Otro / manual».
+El P.C.S. y el factor de corrección del gas natural cambian a diario y varían según la zona exacta de distribución dentro de cada municipio (por eso Madrid capital tiene varias zonas, como «Madrid 2 - Gas Natural Distribución»). El buscador de municipio te deja elegir cualquiera de los 1.675, pero solo los 4 accesos rápidos llevan un P.C.S. y factor de referencia embebidos; para el resto, introdúcelos a mano desde tu factura o desde el enlace de Enagás — o espera a que el proxy en vivo (`enagas-gn-proxy`, ver más abajo) esté desplegado, momento en el que se autocompletarán para cualquier municipio.
+
+### Dato en vivo (opcional)
+
+El repositorio hermano [`enagas-gn-proxy`](https://github.com/whoissif/enagas-gn-proxy) es un Cloudflare Worker que consulta Enagás en el servidor (evitando el bloqueo CORS de una página estática) y sirve el P.C.S. y el factor de corrección de cualquier municipio con cabeceras CORS y caché de una hora. Cuando esté desplegado, basta con rellenar la constante `WORKER_URL` en `index.html` con su URL para que el buscador de municipio autocomplete en vivo cualquiera de los 1.675, no solo los 4 accesos rápidos.
 
 ## Estructura del proyecto
 
 ```
 calculadora-potencia-glp/
-└── index.html   # Interfaz, estilos y lógica de cálculo, todo en un único archivo
+├── index.html       # Interfaz, estilos y lógica de cálculo
+└── municipios.json  # Los 1.675 municipios/zonas de Enagás (código, nombre, provincia)
 ```
 
 ### Ejecutar en local
 
-Basta con abrir `index.html` en el navegador.
+`index.html` consulta `municipios.json` con una ruta relativa, así que ábrelo desde un servidor local en vez de con `file://` (por las restricciones de CORS del navegador ante peticiones `fetch` a `file://`):
+
+```bash
+python -m http.server 8000
+```
 
 ## Publicación
 
