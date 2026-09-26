@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Potencia de Aparatos GLP</title>
+<meta name="description" content="Calculadora de potencia de aparatos a gas propano/butano con P.C.S. real de Repsol España y el factor de conversión oficial de la Resolución de 9 de junio de 2003." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%94%A5%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+
+  :root{
+    --bg-1:#eef2f7;
+    --bg-2:#f8fafc;
+    --surface:#ffffff;
+    --surface-2:#f6f9fc;
+    --surface-3:#eef4fb;
+    --border:#dbe3ec;
+    --border-strong:#93b8e8;
+    --text:#16202e;
+    --text-heading:#334155;
+    --text-muted:#64748b;
+    --accent:#0b3d91;
+    --accent-2:#1565c0;
+    --accent-soft:#eef6ff;
+    --flame:#f97316;
+    --flame-soft:#fff2e3;
+    --flame-text:#a34d00;
+    --ok:#0f9d58;
+    --err-bg:#fdecea;
+    --err-text:#a50e0e;
+    --err-border:#f6c9c5;
+    --code-bg:#0f172a;
+    --code-text:#d7e3f4;
+    --code-accent:#7ec4ff;
+    --code-value:#ffb86b;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg-1:#0b1220;
+      --bg-2:#0f172a;
+      --surface:#141d2e;
+      --surface-2:#182234;
+      --surface-3:#16233a;
+      --border:#2a3a52;
+      --border-strong:#3d6bb0;
+      --text:#e2e8f0;
+      --text-heading:#c7d3e6;
+      --text-muted:#8ea0b8;
+      --accent:#5b9bf5;
+      --accent-2:#3f7fd9;
+      --accent-soft:#132540;
+      --flame:#fb923c;
+      --flame-soft:#2c1c0c;
+      --flame-text:#ffb877;
+      --ok:#34c281;
+      --err-bg:#3a1414;
+      --err-text:#ff9d92;
+      --err-border:#6b2323;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg-1:#0b1220;
+    --bg-2:#0f172a;
+    --surface:#141d2e;
+    --surface-2:#182234;
+    --surface-3:#16233a;
+    --border:#2a3a52;
+    --border-strong:#3d6bb0;
+    --text:#e2e8f0;
+    --text-heading:#c7d3e6;
+    --text-muted:#8ea0b8;
+    --accent:#5b9bf5;
+    --accent-2:#3f7fd9;
+    --accent-soft:#132540;
+    --flame:#fb923c;
+    --flame-soft:#2c1c0c;
+    --flame-text:#ffb877;
+    --ok:#34c281;
+    --err-bg:#3a1414;
+    --err-text:#ff9d92;
+    --err-border:#6b2323;
+    color-scheme:dark;
+  }
+
+  body{
+    margin:0;
+    font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--bg-1) 0%,var(--bg-2) 100%);
+    color:var(--text);
+    line-height:1.55;
+    padding:0 16px 60px;
+  }
+  header{
+    background:linear-gradient(120deg,#0b3d91,#1565c0 70%,#2e7fd4);
+    color:#fff;
+    padding:38px 20px 44px;
+    text-align:center;
+    margin:0 -16px;
+    border-radius:0 0 20px 20px;
+  }
+  header h1{margin:0 0 8px;font-size:clamp(1.35rem,3.4vw,2rem);letter-spacing:-.4px;font-weight:700}
+  header p{margin:0;opacity:.92;font-size:.95rem;max-width:720px;margin-inline:auto}
+  .wrap{max-width:1120px;margin:0 auto}
+  .grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:20px;
+    margin-top:-22px;
+  }
+  @media(min-width:880px){
+    .grid{grid-template-columns:1.05fr .95fr;align-items:start}
+  }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:22px;
+    box-shadow:0 6px 22px rgba(15,32,60,.12);
+  }
+  .card h2{
+    margin:0 0 16px;
+    font-size:1.02rem;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--accent);
+    display:flex;align-items:center;gap:8px;
+    font-weight:600;
+  }
+  .campo{margin-bottom:16px}
+  .campo label{
+    display:block;font-weight:600;font-size:.88rem;margin-bottom:6px;color:var(--text-heading);
+  }
+  .campo .ayuda{font-size:.76rem;color:var(--text-muted);font-weight:400;display:block;margin-top:4px}
+  .fila{display:flex;gap:8px}
+  input[type=number],select{
+    width:100%;
+    padding:11px 12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    font-size:1rem;
+    font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+    background:var(--surface);
+    color:var(--text);
+    transition:border-color .15s, box-shadow .15s;
+  }
+  select{font-family:"IBM Plex Sans",inherit}
+  input[type=number]:focus,select:focus{
+    outline:none;border-color:var(--accent-2);
+    box-shadow:0 0 0 3px rgba(21,101,192,.2);
+  }
+  select{flex:0 0 42%;cursor:pointer}
+  input[type=number]{flex:1}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .chip{
+    border:1px solid var(--border);background:var(--surface-2);color:var(--text-heading);
+    border-radius:999px;padding:4px 12px;font-size:.78rem;cursor:pointer;
+    font-family:"IBM Plex Mono",monospace;transition:.15s;
+  }
+  .chip:hover{background:var(--accent-soft);border-color:var(--border-strong);color:var(--accent)}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  details.avanzado{
+    margin-top:6px;border-top:1px dashed var(--border);padding-top:14px;
+  }
+  details.avanzado summary{
+    cursor:pointer;font-weight:600;font-size:.85rem;color:var(--accent);
+    list-style:none;user-select:none;
+  }
+  details.avanzado summary::-webkit-details-marker{display:none}
+  details.avanzado summary::before{content:"▸ ";transition:.2s}
+  details.avanzado[open] summary::before{content:"▾ "}
+  .check{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--text-heading);margin:10px 0}
+  .check input{width:18px;height:18px;accent-color:var(--accent)}
+
+  /* Resultados */
+  .kpi-principal{
+    background:linear-gradient(135deg,#0b3d91,#1565c0);
+    color:#fff;border-radius:14px;padding:20px;text-align:center;margin-bottom:16px;
+  }
+  .kpi-principal .lbl{font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;opacity:.85}
+  .kpi-principal .val{font-size:2.6rem;font-weight:700;line-height:1.15;letter-spacing:-1px;font-family:"IBM Plex Mono",monospace}
+  .kpi-principal .val small{font-size:1.1rem;font-weight:600;opacity:.9;font-family:"IBM Plex Sans",sans-serif}
+  .kpi-principal .sub{font-size:.85rem;opacity:.9;font-family:"IBM Plex Mono",monospace}
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .kpi{
+    background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;
+  }
+  .kpi .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);font-weight:700}
+  .kpi .val{font-size:1.22rem;font-weight:700;color:var(--text-heading);line-height:1.3;font-family:"IBM Plex Mono",monospace}
+  .kpi .val small{font-size:.78rem;font-weight:600;color:var(--text-muted);font-family:"IBM Plex Sans",sans-serif}
+  .aviso{margin-top:14px;font-size:.82rem;border-radius:10px;padding:10px 12px;display:none}
+  .aviso.err{display:block;background:var(--err-bg);color:var(--err-text);border:1px solid var(--err-border)}
+  .aviso.info{display:block;background:var(--accent-soft);color:var(--accent);border:1px solid var(--border-strong)}
+
+  /* Desglose */
+  .bloque{margin-top:20px}
+  pre.desglose{
+    background:var(--code-bg);color:var(--code-text);border-radius:12px;padding:16px;
+    font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+    font-size:.8rem;line-height:1.75;overflow-x:auto;margin:0;
+    white-space:pre;
+  }
+  pre.desglose b{color:var(--code-accent);font-weight:600}
+  pre.desglose i{color:var(--code-value);font-style:normal}
+
+  /* Tabla */
+  .tabla-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:.85rem;font-family:"IBM Plex Mono",monospace}
+  th,td{padding:9px 8px;text-align:center;border-bottom:1px solid var(--border)}
+  th{background:var(--surface-3);color:var(--accent);font-size:.76rem;text-transform:uppercase;letter-spacing:.04em;font-family:"IBM Plex Sans",sans-serif}
+  td:first-child,th:first-child{text-align:left;font-weight:600}
+  td.match{background:var(--flame-soft);color:var(--flame-text);font-weight:700;box-shadow:inset 0 0 0 2px var(--flame)}
+  .leyenda{font-size:.76rem;color:var(--text-muted);margin-top:10px;font-family:"IBM Plex Sans",sans-serif}
+  footer{
+    max-width:1120px;margin:26px auto 0;font-size:.76rem;color:var(--text-muted);
+  }
+  footer p{margin:6px 0}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔥 Calculadora de Potencia de Aparatos a Gas</h1>
+  <p>Obtén la potencia real (kW) de cualquier aparato a GLP a partir de su consumo volumétrico, la presión del contador y el P.C.S., aplicando el factor de conversión m³ → kg de la Resolución de 9 de junio de 2003.</p>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+
+    <!-- ============ ENTRADA ============ -->
+    <section class="card">
+      <h2>⚙️ Datos de entrada</h2>
+
+      <div class="campo">
+        <label for="consumo">Consumo volumétrico de gas</label>
+        <div class="fila">
+          <input type="number" id="consumo" value="30" min="0" step="0.1" />
+          <select id="consumoUnidad">
+            <option value="lmin" selected>L/min</option>
+            <option value="m3h">m³/h</option>
+          </select>
+        </div>
+        <span class="ayuda">Caudal medido en el contador o con caudalímetro, en las condiciones de la instalación.</span>
+      </div>
+
+      <div class="campo">
+        <label for="presion">Presión relativa del gas en el contador (h)</label>
+        <div class="fila">
+          <input type="number" id="presion" value="150" min="1" step="1" />
+          <select id="presionUnidad">
+            <option value="grcm2" selected>gr/cm²</option>
+            <option value="mbar">mbar</option>
+          </select>
+        </div>
+        <div class="chips" id="chipsPresion">
+          <button type="button" class="chip" data-p="37">37</button>
+          <button type="button" class="chip" data-p="150">150</button>
+          <button type="button" class="chip" data-p="400">400</button>
+          <button type="button" class="chip" data-p="800">800</button>
+        </div>
+        <span class="ayuda">Presiones más habituales: 37, 150, 400 y 800 gr/cm².</span>
+      </div>
+
+      <div class="campo">
+        <label for="zona">Zona geográfica (altitud)</label>
+        <select id="zona">
+          <option value="A">Zona A · 0–200 m (11 °C, 9 m)</option>
+          <option value="B" selected>Zona B · 201–500 m (9,5 °C, 350 m)</option>
+          <option value="C">Zona C · &gt;500 m (8 °C, 650 m)</option>
+          <option value="custom">Personalizada (introducir altitud y temperatura)</option>
+        </select>
+      </div>
+
+      <div id="panelCustom" hidden>
+        <div class="fila" style="margin-bottom:16px">
+          <div style="flex:1">
+            <label for="altitud" style="font-size:.8rem;font-weight:600;color:var(--text-heading)">Altitud (m)</label>
+            <input type="number" id="altitud" value="350" step="1" />
+          </div>
+          <div style="flex:1">
+            <label for="temperatura" style="font-size:.8rem;font-weight:600;color:var(--text-heading)">Temp. media ponderada (°C)</label>
+            <input type="number" id="temperatura" value="9.5" step="0.1" />
+          </div>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="pcs">Poder Calorífico Superior (P.C.S.)</label>
+        <div class="fila">
+          <input type="number" id="pcs" value="13.840" min="0.1" step="0.001" />
+          <select id="pcsUnidad">
+            <option value="kwhkg" selected>kWh/kg</option>
+            <option value="mjkkg">MJ/kg</option>
+            <option value="kcalkg">kcal/kg</option>
+          </select>
+        </div>
+        <div class="chips" id="chipsPcs">
+          <button type="button" class="chip" data-gas="propano" data-pcs="13.840" data-densidad="2.080">Propano Repsol 13,840</button>
+          <button type="button" class="chip" data-gas="butano" data-pcs="13.723" data-densidad="2.593">Butano Repsol 13,723</button>
+        </div>
+        <span class="ayuda">Valores reales de Repsol Butano, S.A. (ver fuente al pie). Al elegir el gas se actualiza también la densidad D de las opciones avanzadas.</span>
+      </div>
+
+      <div class="campo">
+        <label for="rendimiento">Rendimiento del aparato (%)</label>
+        <input type="number" id="rendimiento" value="100" min="1" max="120" step="1" />
+        <span class="ayuda">Déjalo en 100 para obtener la potencia térmica consumida. Usa el rendimiento real (p. ej. 90) si quieres la potencia útil.</span>
+      </div>
+
+      <details class="avanzado">
+        <summary>Opciones avanzadas</summary>
+
+        <div class="campo" style="margin-top:12px">
+          <label for="densidad">Densidad media D (kg/Nm³)</label>
+          <input type="number" id="densidad" value="2.080" step="0.001" min="0.1" />
+          <span class="ayuda">Propano: 2,080 kg/Nm³, valor de la tabla oficial (Resolución de 9 de junio de 2003). Butano comercial: ≈2,593 kg/Nm³ (masa molecular 58,12 g/mol ÷ 22,414 L/mol). Se autocompleta al elegir el gas arriba; puedes sobrescribirla.</span>
+        </div>
+
+        <label class="check">
+          <input type="checkbox" id="usarFCManual" />
+          Usar un factor de conversión manual (verificar factura)
+        </label>
+        <div class="campo" id="panelFCManual" hidden>
+          <label for="fcManual">Factor de conversión aplicado en tu factura (kg/m³)</label>
+          <input type="number" id="fcManual" value="2.23" step="0.001" min="0.1" />
+        </div>
+      </details>
+
+      <div id="aviso" class="aviso" role="alert" aria-live="polite"></div>
+    </section>
+
+    <!-- ============ RESULTADOS ============ -->
+    <section class="card">
+      <h2>📊 Resultados</h2>
+
+      <div class="kpi-principal">
+        <div class="lbl">Potencia del aparato</div>
+        <div class="val"><span id="resPotencia">—</span> <small>kW</small></div>
+        <div class="sub" id="resPotenciaSub">— kcal/h · — MJ/h</div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="lbl">Factor conversión</div>
+          <div class="val"><span id="resFC">—</span> <small>kg/m³</small></div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Caudal másico</div>
+          <div class="val"><span id="resMasa">—</span> <small>kg/h</small></div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Caudal normalizado</div>
+          <div class="val"><span id="resNm3">—</span> <small>Nm³/h</small></div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Energía por m³</div>
+          <div class="val"><span id="resEnergiaM3">—</span> <small>kWh/m³</small></div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Caudal en condiciones de medida</div>
+          <div class="val"><span id="resM3h">—</span> <small>m³/h</small></div>
+        </div>
+        <div class="kpi">
+          <div class="lbl">Potencia útil</div>
+          <div class="val"><span id="resPotUtil">—</span> <small>kW</small></div>
+        </div>
+      </div>
+
+      <div id="comparativa" class="aviso info" role="status" aria-live="polite" hidden></div>
+    </section>
+  </div>
+
+  <!-- ============ DESGLOSE ============ -->
+  <section class="card bloque">
+    <h2>🧮 Desglose del cálculo</h2>
+    <pre class="desglose" id="desglose">Introduce los datos para ver el cálculo…</pre>
+  </section>
+
+  <!-- ============ TABLA ============ -->
+  <section class="card bloque">
+    <h2>📋 Factores de conversión oficiales — Propano (kg/m³)</h2>
+    <div class="tabla-wrap">
+    <table id="tablaFactores">
+      <thead>
+        <tr>
+          <th>Presión del gas (gr/cm²)</th>
+          <th>Zona A<br><span style="font-weight:400;text-transform:none">11 °C · 9 m</span></th>
+          <th>Zona B<br><span style="font-weight:400;text-transform:none">9,5 °C · 350 m</span></th>
+          <th>Zona C<br><span style="font-weight:400;text-transform:none">8 °C · 650 m</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>37</td><td data-zona="A" data-presion="37">2,08</td><td data-zona="B" data-presion="37">2,01</td><td data-zona="C" data-presion="37">1,95</td></tr>
+        <tr><td>150</td><td data-zona="A" data-presion="150">2,30</td><td data-zona="B" data-presion="150">2,23</td><td data-zona="C" data-presion="150">2,17</td></tr>
+        <tr><td>400</td><td data-zona="A" data-presion="400">2,78</td><td data-zona="B" data-presion="400">2,72</td><td data-zona="C" data-presion="400">2,66</td></tr>
+        <tr><td>800</td><td data-zona="A" data-presion="800">3,55</td><td data-zona="B" data-presion="800">3,49</td><td data-zona="C" data-presion="800">3,44</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="leyenda">La celda resaltada corresponde a tu zona y presión actuales. Esta tabla, según la Resolución de 9 de junio de 2003, solo está normalizada para propano; con butano seleccionado no se resalta ninguna celda.</p>
+  </section>
+
+  <footer>
+    <p><strong>Fórmula del factor de conversión:</strong> FC = D × [(P1 ÷ Pn) × (Tn ÷ T1)] · P1 = Pa + h · Pa = 1039,65 − (0,118 × altitud) · Pn = 1.033 gr/cm² · Tn = 273,16 K · T1 = 273,16 + Tª.</p>
+    <p><strong>Nota:</strong> la fuente original de esta fórmula indica Pn = 1,033 gr/cm², pero tanto su ejemplo de cálculo como la tabla de valores estándar solo se reproducen correctamente con Pn = 1.033 gr/cm² (1 atmósfera ≈ 1033 gr/cm²). Se utiliza el valor corregido.</p>
+    <p><strong>Potencia:</strong> P (kW) = caudal másico (kg/h) × P.C.S. (kWh/kg). Equivalencias: 1 kWh = 3,6 MJ = 859,845 kcal.</p>
+    <p><strong>P.C.S. de referencia (Repsol España):</strong> Propano comercial 11.900 kcal/kg (13,840 kWh/kg) y Butano comercial mín. 11.800 kcal/kg (13,723 kWh/kg), según las Fichas de Datos de Seguridad de Repsol Butano, S.A. — «Propano Comercial» Rev. 3.1 (13/10/2016) y «Butano Comercial» Rev. 2.1 (17/01/2013). El valor real puede variar ligeramente según el lote y la composición exacta de la mezcla; usa el campo de P.C.S. si tu suministrador indica otro dato en factura.</p>
+    <p>Herramienta orientativa de cálculo energético. No sustituye a la información de tu distribuidora ni a la normativa vigente.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Constantes normativas ---------- */
+  const Pn = 1033;      // gr/cm²  (1 atm)
+  const Tn = 273.16;    // K
+  const ZONAS = {
+    A:{alt:9,   temp:11,  nombre:"Zona A"},
+    B:{alt:350, temp:9.5, nombre:"Zona B"},
+    C:{alt:650, temp:8,   nombre:"Zona C"}
+  };
+  const TABLA = {
+    A:{37:2.08,150:2.30,400:2.78,800:3.55},
+    B:{37:2.01,150:2.23,400:2.72,800:3.49},
+    C:{37:1.95,150:2.17,400:2.66,800:3.44}
+  };
+  const PRESIONES_TABLA = [37,150,400,800];
+  const GRCM2_A_MBAR = 0.980665;   // 1 gr/cm² = 0,980665 mbar
+  const KWH_A_MJ   = 3.6;
+  const KWH_A_KCAL = 859.845;
+  const PCS_PROPANO_KWHKG = 13.840; // Repsol Butano, S.A. — FDS "Propano Comercial" Rev. 3.1 (13/10/2016): 11.900 kcal/kg
+  const TOL = 0.0015;
+
+  /* ---------- Utilidades ---------- */
+  const $ = id => document.getElementById(id);
+  const num = id => parseFloat($(id).value);
+  const fmt = (v,d=2) => {
+    if(!isFinite(v)) return "—";
+    return v.toLocaleString("es-ES",{minimumFractionDigits:d,maximumFractionDigits:d});
+  };
+  const setTxt = (id,t) => { $(id).textContent = t; };
+
+  /* ---------- Referencias ---------- */
+  const elConsumo=$("consumo"), elConsumoU=$("consumoUnidad"),
+        elPresion=$("presion"), elPresionU=$("presionUnidad"),
+        elZona=$("zona"), elAlt=$("altitud"), elTemp=$("temperatura"),
+        elPcs=$("pcs"), elPcsU=$("pcsUnidad"),
+        elRend=$("rendimiento"), elDens=$("densidad"),
+        elFCManualChk=$("usarFCManual"), elFCManual=$("fcManual"),
+        panelCustom=$("panelCustom"), panelFCManual=$("panelFCManual"),
+        aviso=$("aviso"), comparativa=$("comparativa"), desglose=$("desglose");
+
+  /* ---------- Interfaz ---------- */
+  elZona.addEventListener("change", ()=>{
+    panelCustom.hidden = elZona.value !== "custom";
+    calcular();
+  });
+
+  elFCManualChk.addEventListener("change", ()=>{
+    panelFCManual.hidden = !elFCManualChk.checked;
+    calcular();
+  });
+
+  // Chips de presión: solo fijan el valor, el resaltado se sincroniza en calcular()
+  document.querySelectorAll("#chipsPresion .chip").forEach(chip=>{
+    chip.addEventListener("click", ()=>{
+      elPresionU.value = "grcm2";
+      elPresion.value = chip.dataset.p;
+      calcular();
+    });
+  });
+
+  // Chips de PCS: además de el P.C.S., preseleccionan la densidad D real del gas
+  document.querySelectorAll("#chipsPcs .chip").forEach(chip=>{
+    chip.addEventListener("click", ()=>{
+      elPcsU.value = "kwhkg";
+      elPcs.value = chip.dataset.pcs;
+      elDens.value = chip.dataset.densidad;
+      calcular();
+    });
+  });
+
+  // Recalcular en cualquier cambio
+  ["consumo","consumoUnidad","presion","presionUnidad","altitud","temperatura",
+   "pcs","pcsUnidad","rendimiento","densidad","fcManual"].forEach(id=>{
+    $(id).addEventListener("input", calcular);
+    $(id).addEventListener("change", calcular);
+  });
+
+  /* ---------- Limpiar resultados ---------- */
+  function limpiarResultados(){
+    ["resPotencia","resFC","resMasa","resNm3","resEnergiaM3","resM3h","resPotUtil"]
+      .forEach(id => setTxt(id,"—"));
+    setTxt("resPotenciaSub","— kcal/h · — MJ/h");
+    document.querySelectorAll("#tablaFactores td.match")
+      .forEach(td => td.classList.remove("match"));
+  }
+
+  /* ---------- Sincronizar chips con los valores actuales ---------- */
+  function sincronizarChips(esPropano){
+    document.querySelectorAll("#chipsPresion .chip").forEach(chip=>{
+      const activo = elPresionU.value === "grcm2" &&
+        Math.abs(parseFloat(chip.dataset.p) - num("presion")) < 0.5;
+      chip.classList.toggle("on", activo);
+    });
+    document.querySelectorAll("#chipsPcs .chip").forEach(chip=>{
+      const activo = elPcsU.value === "kwhkg" &&
+        Math.abs(parseFloat(chip.dataset.pcs) - num("pcs")) < TOL;
+      chip.classList.toggle("on", activo);
+    });
+  }
+
+  /* ---------- Resaltar celda de la tabla (solo propano) ---------- */
+  function resaltarTabla(zonaClave, h_grcm2, esPropano){
+    document.querySelectorAll("#tablaFactores td.match")
+      .forEach(td => td.classList.remove("match"));
+    if(!esPropano || zonaClave === "custom") return;
+    const p = PRESIONES_TABLA.find(v => Math.abs(v - h_grcm2) < 0.5);
+    if(p === undefined) return;
+    const td = document.querySelector(
+      '#tablaFactores td[data-zona="'+zonaClave+'"][data-presion="'+p+'"]'
+    );
+    if(td) td.classList.add("match");
+  }
+
+  /* ---------- Desglose ---------- */
+  function pintarDesglose(o){
+    const L = [];
+    L.push("<b>1 · UNIDADES Y DATOS DE PARTIDA</b>");
+    L.push("   Consumo introducido ........ " + fmt(o.qIn,2) + " " + o.uConsumo);
+    L.push("   Caudal en m³/h ............. " + fmt(o.q_m3h,3) + " m³/h");
+    L.push("   Presión introducida ........ " + fmt(o.hIn,2) + " " + o.uPresion);
+    L.push("   Presión en gr/cm² .......... " + fmt(o.h_grcm2,2) + " gr/cm²");
+    L.push("   Altitud .................... " + fmt(o.alt,0) + " m");
+    L.push("   Temperatura media .......... " + fmt(o.tempA,1) + " °C");
+    L.push("   Densidad D ................. " + fmt(o.D,3) + " kg/Nm³");
+    L.push("   P.C.S. ..................... " + fmt(o.pcs_kwhkg,4) + " kWh/kg");
+    L.push("");
+    L.push("<b>2 · PRESIÓN ABSOLUTA Y TEMPERATURA ABSOLUTA</b>");
+    L.push("   Pa = 1039,65 − 0,118 × altitud");
+    L.push("   Pa = 1039,65 − 0,118 × " + fmt(o.alt,0) + " = " + fmt(o.Pa,2) + " gr/cm²");
+    L.push("   P1 = Pa + h = " + fmt(o.Pa,2) + " + " + fmt(o.h_grcm2,2) + " = " + fmt(o.P1,2) + " gr/cm²");
+    L.push("   T1 = Tn + Tª = 273,16 + " + fmt(o.tempA,1) + " = " + fmt(o.T1,2) + " K");
+    L.push("");
+    L.push("<b>3 · FACTOR DE CONVERSIÓN  FC = D × (P1/Pn) × (Tn/T1)</b>");
+    L.push("   P1/Pn = " + fmt(o.P1,2) + " / " + Pn + " = " + fmt(o.fPresion,5));
+    L.push("   Tn/T1 = " + Tn + " / " + fmt(o.T1,2) + " = " + fmt(o.fTemp,5));
+    L.push("   FC = " + fmt(o.D,3) + " × " + fmt(o.fPresion,5) + " × " + fmt(o.fTemp,5) +
+           " = <i>" + fmt(o.fcCalculado,4) + " kg/m³</i>");
+    if(o.usarManual){
+      L.push("   FC aplicado (manual) ....... <i>" + fmt(o.fc,4) + " kg/m³</i>");
+    }
+    L.push("");
+    L.push("<b>4 · CAUDALES Y ENERGÍA</b>");
+    L.push("   Caudal másico = Q × FC = " + fmt(o.q_m3h,3) + " × " + fmt(o.fc,4) +
+           " = <i>" + fmt(o.m_dot,3) + " kg/h</i>");
+    L.push("   Caudal normalizado = m / D = " + fmt(o.m_dot,3) + " / " + fmt(o.D,3) +
+           " = " + fmt(o.nm3h,3) + " Nm³/h");
+    L.push("   Energía por m³ = FC × PCS = " + fmt(o.fc,4) + " × " + fmt(o.pcs_kwhkg,4) +
+           " = " + fmt(o.energiaM3,3) + " kWh/m³");
+    L.push("");
+    L.push("<b>5 · POTENCIA</b>");
+    L.push("   P = caudal másico × P.C.S.");
+    L.push("   P = " + fmt(o.m_dot,3) + " kg/h × " + fmt(o.pcs_kwhkg,4) + " kWh/kg = <i>" +
+           fmt(o.potKW,3) + " kW</i>");
+    L.push("   Equivalencias: " + fmt(o.potKW * KWH_A_KCAL,0) + " kcal/h · " +
+           fmt(o.potKW * KWH_A_MJ,2) + " MJ/h");
+    L.push("   P útil = " + fmt(o.potKW,3) + " × " + fmt(o.rend,1) + " % = <i>" +
+           fmt(o.potUtil,3) + " kW</i>");
+    desglose.innerHTML = L.join("\n");
+  }
+
+  /* ---------- Motor de cálculo ---------- */
+  function calcular(){
+    // --- 1. Zona / altitud / temperatura ---
+    let alt, tempA;
+    const zonaClave = elZona.value;
+    if(zonaClave === "custom"){
+      alt   = parseFloat(elAlt.value);
+      tempA = parseFloat(elTemp.value);
+    }else{
+      alt   = ZONAS[zonaClave].alt;
+      tempA = ZONAS[zonaClave].temp;
+    }
+
+    // --- 2. Validaciones ---
+    const errores = [];
+    const qIn   = num("consumo");
+    const hIn   = num("presion");
+    const pcsIn = num("pcs");
+    const D     = num("densidad");
+    const rend  = num("rendimiento");
+
+    if(!isFinite(qIn) || qIn <= 0)                    errores.push("El consumo volumétrico debe ser mayor que 0.");
+    if(!isFinite(hIn) || hIn <= 0)                    errores.push("La presión del contador debe ser mayor que 0.");
+    if(!isFinite(pcsIn) || pcsIn <= 0)                errores.push("El P.C.S. debe ser mayor que 0.");
+    if(!isFinite(D) || D <= 0)                        errores.push("La densidad D debe ser mayor que 0.");
+    if(!isFinite(alt) || alt < 0 || alt > 3000)       errores.push("La altitud debe estar entre 0 y 3000 m.");
+    if(!isFinite(tempA) || tempA < -10 || tempA > 45) errores.push("La temperatura media debe estar entre -10 y 45 °C.");
+    if(!isFinite(rend) || rend <= 0)                  errores.push("El rendimiento debe ser mayor que 0.");
+
+    if(errores.length){
+      aviso.className = "aviso err";
+      aviso.textContent = "⚠️ " + errores[0];
+      limpiarResultados();
+      desglose.textContent = "Corrige los datos indicados para ver el cálculo.";
+      comparativa.hidden = true;
+      sincronizarChips(false);
+      return;
+    }
+    aviso.className = "aviso";
+    aviso.textContent = "";
+
+    // --- 3. Conversión de unidades ---
+    const q_m3h   = elConsumoU.value === "lmin" ? qIn * 0.06 : qIn;          // m³/h
+    const h_grcm2 = elPresionU.value === "mbar" ? hIn / GRCM2_A_MBAR : hIn;  // gr/cm²
+
+    // --- 4. P.C.S. a kWh/kg ---
+    let pcs_kwhkg;
+    switch(elPcsU.value){
+      case "mjkkg":  pcs_kwhkg = pcsIn / KWH_A_MJ;   break;
+      case "kcalkg": pcs_kwhkg = pcsIn / KWH_A_KCAL; break;
+      default:       pcs_kwhkg = pcsIn;
+    }
+    const esPropano = elPcsU.value === "kwhkg" && Math.abs(pcsIn - PCS_PROPANO_KWHKG) < TOL;
+
+    // --- 5. Factor de conversión (fórmula oficial) ---
+    const Pa = 1039.65 - (0.118 * alt);        // gr/cm²
+    const P1 = Pa + h_grcm2;                   // gr/cm²
+    const T1 = Tn + tempA;                     // K
+    const fPresion = P1 / Pn;
+    const fTemp    = Tn / T1;
+    const fcCalculado = D * fPresion * fTemp;  // kg/m³
+
+    // --- 6. Factor aplicado (manual o calculado) ---
+    const usarManual  = elFCManualChk.checked;
+    const fcManualVal = num("fcManual");
+    const fc = (usarManual && isFinite(fcManualVal) && fcManualVal > 0)
+               ? fcManualVal
+               : fcCalculado;
+
+    // --- 7. Caudales y potencia ---
+    const m_dot     = q_m3h * fc;             // kg/h
+    const nm3h      = m_dot / D;              // Nm³/h
+    const energiaM3 = fc * pcs_kwhkg;         // kWh por m³ real
+    const potKW     = m_dot * pcs_kwhkg;      // kW
+    const potUtil   = potKW * (rend / 100);   // kW
+
+    // --- 8. Pintar resultados ---
+    setTxt("resPotencia", fmt(potKW, 2));
+    setTxt("resPotenciaSub",
+      fmt(potKW * KWH_A_KCAL, 0) + " kcal/h · " + fmt(potKW * KWH_A_MJ, 2) + " MJ/h");
+    setTxt("resFC",        fmt(fc, 3));
+    setTxt("resMasa",      fmt(m_dot, 3));
+    setTxt("resNm3",       fmt(nm3h, 3));
+    setTxt("resEnergiaM3", fmt(energiaM3, 3));
+    setTxt("resM3h",       fmt(q_m3h, 3));
+    setTxt("resPotUtil",   fmt(potUtil, 2));
+
+    // --- 9. Comparativa con la tabla normativa (solo propano) ---
+    const pTabla = PRESIONES_TABLA.find(v => Math.abs(v - h_grcm2) < 0.5);
+    if(esPropano && zonaClave !== "custom" && pTabla !== undefined){
+      const fTabla = TABLA[zonaClave][pTabla];
+      const dif    = ((fc - fTabla) / fTabla) * 100;
+      comparativa.hidden = false;
+      comparativa.textContent =
+        "Factor calculado: " + fmt(fc,3) + " kg/m³ · Factor de tabla (" +
+        ZONAS[zonaClave].nombre + ", " + pTabla + " gr/cm²): " + fmt(fTabla,3) +
+        " kg/m³ → desviación " + (dif >= 0 ? "+" : "") + fmt(dif,2) + " %.";
+    }else{
+      comparativa.hidden = true;
+    }
+
+    // --- 10. Desglose, resaltado de tabla y chips ---
+    pintarDesglose({
+      qIn, uConsumo: elConsumoU.value === "lmin" ? "L/min" : "m³/h",
+      hIn, uPresion: elPresionU.value === "mbar" ? "mbar" : "gr/cm²",
+      q_m3h, h_grcm2, alt, tempA, D, pcs_kwhkg,
+      Pa, P1, T1, fPresion, fTemp, fcCalculado,
+      usarManual, fc, m_dot, nm3h, energiaM3, potKW, potUtil, rend
+    });
+
+    resaltarTabla(zonaClave, h_grcm2, esPropano);
+    sincronizarChips(esPropano);
+  }
+
+  /* ---------- Arranque ---------- */
+  calcular();
+
+})();
+</script>
+</body>
+</html>
